@@ -4,8 +4,6 @@ import organisms.Animal;
 import organisms.Organism;
 import world.World;
 
-import java.util.List;
-
 public class Turtle extends Animal {
 
     public static final char SYMBOL = 'T';
@@ -22,10 +20,9 @@ public class Turtle extends Animal {
     @Override public char   getSymbol() { return SYMBOL;   }
     @Override public String getName()   { return "Turtle"; }
 
-    /** Turtle moves only 25 % of the time. */
+    /** Turtle moves only 25 % of the time (rand() % 4 == 0 equivalent). */
     @Override
     public void action() {
-        List<List<int[]>> dummy = null; // suppress unused-import warning
         if ((int)(Math.random() * 4) != 0) return;
         super.action();
     }
@@ -34,6 +31,12 @@ public class Turtle extends Animal {
     @Override
     public void collision(Organism other) {
         if (other == null || !this.getIsAlive() || !other.getIsAlive()) return;
+
+        // Same species → breed (delegate to Animal.collision)
+        if (this.getSymbol() == other.getSymbol()) {
+            super.collision(other);
+            return;
+        }
 
         if (other.getStrength() < 5) {
             world.addLog(other.getName() + " was repelled by Turtle");
